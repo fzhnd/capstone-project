@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My To-do List - Kalender</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Poppins', sans-serif; }
+  </style>
+</head>
+<body class="bg-pink-50 flex flex-col min-h-screen">
+
+  <!-- Header -->
+  <header class="bg-white shadow p-4 flex justify-between items-center">
+    <h1 class="text-xl font-bold text-pink-600">My To-do List</h1>
+    <nav class="space-x-4">
+      <a href="index.html" class="text-gray-600 hover:text-pink-600">Tugas</a>
+      <a href="list.html" class="text-pink-600 font-semibold">Kalender</a>
+    </nav>
+  </header>
+
+  <!-- Main -->
+  <main class="flex-1 p-6">
+    <div class="max-w-3xl mx-auto bg-pink-100 p-6 rounded-2xl shadow">
+      <h2 class="text-pink-500 text-2xl font-bold text-center mb-6">Kalender</h2>
+
+      <div class="flex justify-between items-center mb-4">
+        <button id="prev-month" class="px-3 py-1 bg-pink-200 hover:bg-pink-300 rounded-lg">◀</button>
+        <h3 id="month-year" class="text-lg font-bold"></h3>
+        <button id="next-month" class="px-3 py-1 bg-pink-200 hover:bg-pink-300 rounded-lg">▶</button>
+      </div>
+      <div class="grid grid-cols-7 gap-2 text-center font-semibold">
+        <div>Min</div><div>Sen</div><div>Sel</div><div>Rab</div><div>Kam</div><div>Jum</div><div>Sab</div>
+      </div>
+      <div id="calendar-grid" class="grid grid-cols-7 gap-2 mt-2"></div>
+
+      <div class="mt-6">
+        <h3 class="font-bold text-pink-500 text-lg mb-2">Tugas pada <span id="selected-date-label"></span></h3>
+        <div id="tasks-on-date" class="space-y-2"></div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-white shadow p-4 text-center text-sm text-gray-500">
+    © 2025 My To-do List
+  </footer>
+
+  <script src="list.js"></script>
+</body>
+</html>
