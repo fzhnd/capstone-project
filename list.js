@@ -9,6 +9,10 @@ const selectedDateLabel = document.getElementById('selected-date-label');
 let currentDate = new Date();
 let selectedDate = new Date().toISOString().split('T')[0];
 
+function todayISO() {
+  return new Date().toISOString().split('T')[0];
+}
+
 function renderCalendar() {
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
@@ -53,7 +57,7 @@ function renderCalendar() {
 }
 
 function hasTaskOnDate(dateStr) {
-  return todoList.some(t => matchesDate(t, dateStr));
+  return uniqueTasks(todoList.filter(t => matchesDate(t, dateStr))).length > 0;
 }
 
 function matchesDate(task, dateStr) {
@@ -61,20 +65,18 @@ function matchesDate(task, dateStr) {
   const current = new Date(dateStr);
 
   if (current < taskDate) return false;
+  if (task.completed && task.completedAt === dateStr) return false;
 
   if (task.date === dateStr) return true;
   if (task.repeat === 'daily') return current >= taskDate;
   if (task.repeat === 'weekly') {
-    return current >= taskDate &&
-      taskDate.getDay() === current.getDay();
+    return current >= taskDate && taskDate.getDay() === current.getDay();
   }
   if (task.repeat === 'monthly') {
-    return current >= taskDate &&
-      task.date.split('-')[2] === dateStr.split('-')[2];
+    return current >= taskDate && task.date.split('-')[2] === dateStr.split('-')[2];
   }
   if (task.repeat === 'yearly') {
-    return current >= taskDate &&
-      task.date.slice(5) === dateStr.slice(5);
+    return current >= taskDate && task.date.slice(5) === dateStr.slice(5);
   }
   return false;
 }
@@ -89,10 +91,31 @@ function getRepeatLabel(repeat) {
   }
 }
 
+function uniqueTasks(tasks) {
+  const seen = new Set();
+  return tasks.filter(t => {
+    const key = `${t.task}-${t.repeat}-${t.time}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
 function showTasks(dateStr) {
   selectedDateLabel.textContent = dateStr;
   tasksOnDate.innerHTML = '';
-  const tasks = todoList.filter(t => matchesDate(t, dateStr));
+
+  let tasks = todoList.filter(t => matchesDate(t, dateStr));
+  tasks = uniqueTasks(tasks);
+
+  if (dateStr === todayISO()) {
+    const unfinished = tasks.filter(t => !(t.completed && t.completedAt === dateStr));
+    if (unfinished.length === 0) {
+      tasksOnDate.innerHTML = '<div class="text-gray-500">Semua tugas hari ini sudah selesai 🎉</div>';
+      return;
+    }
+  }
+
   if (tasks.length === 0) {
     tasksOnDate.innerHTML = '<div class="text-gray-500">Tidak ada tugas</div>';
     return;
@@ -101,8 +124,14 @@ function showTasks(dateStr) {
   tasks.forEach(t => {
     const div = document.createElement('div');
     div.className = "bg-white border-2 border-pink-200 rounded-lg p-3 shadow";
+
+    const isCompletedToday = t.completed && t.completedAt === dateStr;
+    const taskName = isCompletedToday
+      ? `<span class="line-through text-gray-400">${t.task}</span>`
+      : t.task;
+
     div.innerHTML = `
-      <div class="font-semibold">${t.task}</div>
+      <div class="font-semibold">${taskName}</div>
       <div class="text-sm text-gray-500">
         ${t.time ? t.time : ''} ${t.repeat !== 'none' ? '🔁 ' + getRepeatLabel(t.repeat) : ''}
       </div>`;
