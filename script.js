@@ -20,7 +20,6 @@ const todayList = document.getElementById('today-list');
 const upcomingList = document.getElementById('upcoming-list');
 const completedList = document.getElementById('completed-list');
 
-
 const todayISO = () => new Date().toISOString().split('T')[0];
 const genId = () => crypto.randomUUID();
 
@@ -114,7 +113,8 @@ function clearForm() {
 
 function markCompleted(todo) {
   todo.completed = true;
-  todo.completedAt = new Date().toISOString();
+  todo.completedAt = todayISO();
+
   if (todo.repeat !== 'none') {
     todoList.push({
       id: genId(),
@@ -131,8 +131,12 @@ function markCompleted(todo) {
 function toggleComplete(id) {
   const t = todoList.find(x => x.id === id);
   if (!t) return;
-  if (!t.completed) markCompleted(t);
-  else { t.completed = false; t.completedAt = null; }
+  if (!t.completed) {
+    markCompleted(t);
+  } else {
+    t.completed = false;
+    t.completedAt = null;
+  }
   save();
   render();
 }
@@ -257,7 +261,7 @@ function render() {
 
   list.forEach(t => {
     if (t.completed) {
-      if (t.completedAt && t.completedAt.split('T')[0] === today) {
+      if (t.completedAt && t.completedAt === today) {
         completedList.appendChild(createCard(t));
       }
     } else {
